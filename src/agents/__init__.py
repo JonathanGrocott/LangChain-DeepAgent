@@ -1,3 +1,13 @@
-"""Agents package - Orchestrator and Subagent definitions"""
+"""Agents package - Orchestrator and Sub agent definitions"""
 
-# This package will contain the main orchestrator and subagent implementations
+from .orchestrator import (
+    create_orchestrator_agent,
+    get_orchestrator,
+    run_query,
+)
+
+__all__ = [
+    "create_orchestrator_agent",
+    "get_orchestrator",
+    "run_query",
+]

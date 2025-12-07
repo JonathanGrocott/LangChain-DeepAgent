@@ -44,24 +44,72 @@ def main():
             print("Error: --query required in single mode")
             sys.exit(1)
         
-        # TODO: Implement single query mode
+        # Single query mode
         logger.info("single_query_mode", query=args.query)
-        print(f"Single query mode - Query: {args.query}")
-        print("Implementation coming in Phase 3...")
+        print("\n" + "=" * 60)
+        print("LangChain Deep Agent - Single Query")
+        print("=" * 60)
+        print(f"\nQuery: {args.query}\n")
+        
+        from src.agents import run_query
+        
+        result = run_query(args.query)
+        
+        if result["success"]:
+            print("\nResponse:")
+            print("-" * 60)
+            print(result["response"])
+            print("\n" + "=" * 60)
+        else:
+            print(f"\n✗ Error: {result['error']}")
+            sys.exit(1)
     else:
-        # TODO: Implement interactive mode
+        # Interactive mode
         logger.info("interactive_mode_starting")
         print("=" * 60)
         print("LangChain Deep Agent for Manufacturing - Interactive Mode")
         print("=" * 60)
-        print("\nImplementation coming in Phase 3...")
         print("\nConfiguration:")
         print(f"  • Model: {settings.openai_model}")
         print(f"  • Environment: {settings.app_env}")
         print(f"  • LangSmith: {'✓ Enabled' if settings.is_langsmith_enabled else '✗ Disabled'}")
         print(f"  • ChromaDB: {settings.chromadb_host}:{settings.chromadb_port}")
-        print("\nType 'exit' to quit")
-        print("=" * 60)
+        print("\nThe agent can:")
+        print("  - Fetch real-time equipment data")
+        print("  - Analyze production metrics")
+        print("  - Generate maintenance reports")
+        print("  - Query work orders and inventory")
+        print("\nType 'exit' or 'quit' to end the session")
+        print("=" * 60 + "\n")
+        
+        from src.agents import run_query
+        
+        while True:
+            try:
+                query = input("\n🏭 You: ").strip()
+                
+                if not query:
+                    continue
+                
+                if query.lower() in ["exit", "quit", "q"]:
+                    print("\nGoodbye!")
+                    break
+                
+                print("\n🤖 Agent: ", end="", flush=True)
+                
+                result = run_query(query)
+                
+                if result["success"]:
+                    print(result["response"])
+                else:
+                    print(f"\n✗ Error: {result['error']}")
+                    
+            except KeyboardInterrupt:
+                print("\n\nGoodbye!")
+                break
+            except Exception as e:
+                logger.error("interactive_error", error=str(e))
+                print(f"\n✗ Unexpected error: {e}")
 
 
 if __name__ == "__main__":
