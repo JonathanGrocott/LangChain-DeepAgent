@@ -33,9 +33,11 @@ def create_orchestrator_agent():
     """
     logger.info("creating_orchestrator_agent")
     
-    # Initialize LLM
+    # Initialize LLM with explicit API key from settings
     model = init_chat_model(
         model=settings.openai_model,
+        model_provider="openai",
+        api_key=settings.openai_api_key,
         temperature=settings.openai_temperature,
     )
     

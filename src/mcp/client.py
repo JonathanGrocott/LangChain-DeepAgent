@@ -83,9 +83,17 @@ class MCPClient:
         Returns:
             LangChain Tool object
         """
-        def tool_func(**kwargs) -> str:
+        def tool_func(input_str: str) -> str:
             """Execute the MCP tool and return result as string"""
             try:
+                # Parse input - LangChain may pass JSON string or plain string
+                import json
+                try:
+                    kwargs = json.loads(input_str) if input_str else {}
+                except (json.JSONDecodeError, TypeError):
+                    # If not JSON, treat as empty args
+                    kwargs = {}
+                
                 logger.info(
                     "mcp_tool_called",
                     server=server.server_name,
