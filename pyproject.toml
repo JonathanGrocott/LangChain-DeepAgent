@@ -1,0 +1,59 @@
+[tool.poetry]
+name = "langchain-deepagent"
+version = "0.1.0"
+description = "LangChain Deep Agent framework for manufacturing with MCP server integration"
+authors = ["Your Name <you@example.com>"]
+readme = "README.md"
+packages = [{include = "src"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+# Deep Agents & LangChain
+deepagents = "^0.1.0"
+langchain = "^0.3.0"
+langchain-openai = "^0.2.0"
+langgraph = "^0.2.0"
+langsmith = "^0.1.0"
+
+# MCP & Communication
+httpx = "^0.27.0"
+sse-starlette = "^2.0.0"
+fastapi = "^0.115.0"
+uvicorn = "^0.32.0"
+
+# RAG & Embeddings
+chromadb = "^0.5.0"
+tiktoken = "^0.8.0"
+
+# Configuration & Utils
+pydantic = "^2.9.0"
+pydantic-settings = "^2.6.0"
+python-dotenv = "^1.0.0"
+structlog = "^24.4.0"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.3.0"
+pytest-asyncio = "^0.24.0"
+black = "^24.10.0"
+ruff = "^0.7.0"
+ipython = "^8.29.0"
+
+[tool.poetry.scripts]
+deepagent = "src.main:main"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line-length = 100
+target-version = ['py310']
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+pythonpath = ["."]
+testpaths = ["tests"]
