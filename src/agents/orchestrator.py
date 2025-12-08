@@ -16,6 +16,7 @@ from src.agents.prompts import (
     REPORTING_PROMPT,
 )
 from src.mcp import get_mcp_client
+from src.rag.retrieval import get_docs_search_tool, get_maintenance_search_tool
 from src.utils import get_logger
 
 logger = get_logger(__name__)
@@ -67,7 +68,10 @@ def create_orchestrator_agent():
             "name": "analysis",
             "description": "Analyzes manufacturing data for trends, anomalies, and insights",
             "system_prompt": ANALYSIS_PROMPT,
-            "tools": [],  # Analysis uses built-in file tools + RAG (to be added in Phase 5)
+            "tools": [
+                get_docs_search_tool(),
+                get_maintenance_search_tool()
+            ],
         },
         {
             "name": "reporting",

@@ -18,16 +18,14 @@ def main():
         description="LangChain Deep Agent for Manufacturing"
     )
     parser.add_argument(
-        "--mode",
-        choices=["interactive", "single"],
+        "--mode", 
+        type=str, 
+        choices=["interactive", "single", "ingest"], 
         default="interactive",
-        help="Run mode: interactive chat or single query"
+        help="Run mode: interactive chat, single query, or document ingestion"
     )
-    parser.add_argument(
-        "--query",
-        type=str,
-        help="Query to run in single mode"
-    )
+    parser.add_argument("--query", type=str, help="Query for single mode")
+    parser.add_argument("--docs", type=str, help="Path to documents for ingestion mode")
     
     args = parser.parse_args()
     
@@ -38,6 +36,40 @@ def main():
         langsmith_enabled=settings.is_langsmith_enabled
     )
     
+    if args.mode == "ingest":
+        if not args.docs:
+            logger.error("ingest_mode_requires_docs")
+            print("Error: --docs <path> required in ingest mode")
+            sys.exit(1)
+            
+        from src.rag.chromadb_manager import get_chroma_manager
+        from src.rag.document_loader import DocumentProcessor
+        
+        print("\n" + "=" * 60)
+        print(f"Ingesting documents from: {args.docs}")
+        print("=" * 60)
+        
+        try:
+            processor = DocumentProcessor()
+            docs = processor.process_and_split(args.docs)
+            
+            if not docs:
+                print("No documents found or processed.")
+                sys.exit(1)
+                
+            print(f"\nProcessing {len(docs)} chunks...")
+            
+            manager = get_chroma_manager()
+            manager.add_documents("manufacturing_docs", docs)
+            
+            print("\n✓ Ingestion complete!")
+            print("=" * 60)
+            sys.exit(0)
+            
+        except Exception as e:
+            print(f"\n❌ Error during ingestion: {e}")
+            sys.exit(1)
+
     if args.mode == "single":
         if not args.query:
             logger.error("single_mode_requires_query")

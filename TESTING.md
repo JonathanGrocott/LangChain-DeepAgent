@@ -11,7 +11,7 @@ Run the full system test with interactive selection:
 
 ```bash
 cd /Users/jg/Documents/github/LangChain-DeepAgent
-python3 test_full_system.py
+python3 tests/test_full_system.py
 ```
 
 This will:
@@ -36,7 +36,7 @@ This will:
 
 ## Interactive Mode
 
-For conversational testing:
+For conversational testing (run from project root):
 
 ```bash
 python3 -m src.main --mode interactive
@@ -89,6 +89,7 @@ If you enabled LangSmith:
 
 **Error: Module not found**
 - Run: `pip3 install -r requirements.txt`
+- Ensure you are running from project root: `python3 tests/test_full_system.py`
 
 **Agent not using tools**
 - This is expected for very simple queries

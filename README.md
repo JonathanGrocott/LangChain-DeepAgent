@@ -79,19 +79,23 @@ docker exec -it langchain-deepagent python examples/production_monitoring.py
 ## Project Structure
 
 ```
-LangChain-DeepAgent/
-├── src/
-│   ├── config/          # Configuration and settings
-│   ├── agents/          # Orchestrator and subagent definitions
-│   ├── mcp/             # MCP server infrastructure
-│   ├── rag/             # ChromaDB and RAG tools
-│   └── utils/           # Logging and LangSmith setup
-├── examples/            # Example scenarios
-├── tests/               # Test suite
-├── docs/                # Additional documentation
-├── pyproject.toml       # Poetry dependencies
-├── Dockerfile           # Container definition
-└── docker-compose.yml   # Multi-container setup
+LangChain-DeepAgent/.
+├── src/                # Source code
+│   ├── agents/         # LangChain Deep Agent definitions
+│   ├── config/         # Configuration settings
+│   ├── mcp/            # MCP server integrations
+│   ├── rag/            # RAG knowledge base (Phase 5)
+│   ├── utils/          # Logging and helpers
+│   └── main.py         # Entry point
+├── tests/              # Test scripts
+│   ├── test_full_system.py
+│   ├── test_agent.py
+│   └── test_mcp.py
+├── .env                # Environment variables (git-ignored)
+├── docker-compose.yml  # Docker services
+├── Dockerfile          # Production build
+├── pyproject.toml      # Poetry dependencies
+└── README.md           # Documentationer definition
 ```
 
 ## Configuration
