@@ -56,14 +56,29 @@ poetry install
 poetry shell
 ```
 
-### 3. Run Examples
+## 🏭 Example Scenarios
+
+The project includes pre-built scenarios in `examples/scenarios/` demonstrating key capabilities:
+
+1.  **Production Monitoring** (`production`):
+    - Fetches real-time machine data (HighByte)
+    - Analyzes performance vs targets
+    - Summarizes line efficiency
+
+2.  **Predictive Maintenance** (`maintenance`):
+    - Analyzes equipment health tags
+    - Searches RAG knowledge base for troubleshooting guides
+    - Recommends maintenance actions
+
+### Running Examples
 
 ```bash
-# Production monitoring example
-python examples/production_monitoring.py
+# Run specific scenario
+python3 examples/run_examples.py production
+python3 examples/run_examples.py maintenance
 
-# Interactive CLI mode
-python -m src.main --mode interactive
+# Run all
+python3 examples/run_examples.py all
 ```
 
 ### 4. Docker Deployment (Optional)
