@@ -3,8 +3,9 @@
 Connects to MCP servers and exposes their tools as LangChain-compatible tools.
 """
 
-from typing import List, Dict, Any, Callable
-from langchain_core.tools import Tool
+from typing import List, Dict, Any, Callable, Type, Optional
+from langchain_core.tools import StructuredTool
+from pydantic import BaseModel, Field, create_model
 from src.config import settings
 from src.utils import get_logger
 from .servers import HighByteMockServer, TeradataMockServer, SQLServerMockServer, BaseMCPServer
@@ -20,7 +21,7 @@ class MCPClient:
     
     def __init__(self):
         self._servers: Dict[str, BaseMCPServer] = {}
-        self._tools: List[Tool] = []
+        self._tools: List[StructuredTool] = []
         self._initialize_servers()
     
     def _initialize_servers(self) -> None:
@@ -62,7 +63,8 @@ class MCPClient:
                 langchain_tool = self._create_tool_wrapper(
                     server=server,
                     tool_name=tool_def["name"],
-                    tool_description=tool_def["description"]
+                    tool_description=tool_def["description"],
+                    input_schema=tool_def["inputSchema"]
                 )
                 self._tools.append(langchain_tool)
     
@@ -70,30 +72,60 @@ class MCPClient:
         self,
         server: BaseMCPServer,
         tool_name: str,
-        tool_description: str
-    ) -> Tool:
+        tool_description: str,
+        input_schema: Dict[str, Any]
+    ) -> StructuredTool:
         """
-        Create a LangChain Tool wrapper for an MCP tool.
+        Create a LangChain StructuredTool wrapper for an MCP tool.
         
         Args:
             server: The MCP server instance
             tool_name: Name of the tool
             tool_description: Description of the tool
+            input_schema: JSON schema for tool inputs
             
         Returns:
-            LangChain Tool object
+            LangChain StructuredTool object
         """
-        def tool_func(input_str: str) -> str:
+        # Create Pydantic model from JSON schema
+        fields = {}
+        properties = input_schema.get("properties", {})
+        required = input_schema.get("required", [])
+        
+        for field_name, field_info in properties.items():
+            field_type = str  # Default type
+            field_default = ... if field_name in required else None
+            
+            # Map JSON schema types to Python types
+            if field_info.get("type") == "integer":
+                field_type = int
+            elif field_info.get("type") == "number":
+                field_type = float
+            elif field_info.get("type") == "boolean":
+                field_type = bool
+            
+            # Handle optional fields
+            if field_name not in required:
+                field_type = Optional[field_type]
+            
+            fields[field_name] = (
+                field_type,
+                Field(
+                    default=field_default,
+                    description=field_info.get("description", "")
+                )
+            )
+        
+        # Create dynamic Pydantic model
+        if fields:
+            ArgsSchema = create_model(f"{tool_name}_args", **fields)
+        else:
+            # No args - create empty model
+            ArgsSchema = create_model(f"{tool_name}_args")
+        
+        def tool_func(**kwargs) -> str:
             """Execute the MCP tool and return result as string"""
             try:
-                # Parse input - LangChain may pass JSON string or plain string
-                import json
-                try:
-                    kwargs = json.loads(input_str) if input_str else {}
-                except (json.JSONDecodeError, TypeError):
-                    # If not JSON, treat as empty args
-                    kwargs = {}
-                
                 logger.info(
                     "mcp_tool_called",
                     server=server.server_name,
@@ -105,7 +137,8 @@ class MCPClient:
                 
                 if result.get("success"):
                     # Return data as formatted string
-                    return str(result["data"])
+                    import json
+                    return json.dumps(result["data"], indent=2)
                 else:
                     error_msg = f"Error: {result.get('error', 'Unknown error')}"
                     logger.error(
@@ -126,18 +159,19 @@ class MCPClient:
                 )
                 return error_msg
         
-        # Create LangChain Tool
-        return Tool(
+        # Create LangChain StructuredTool with schema
+        return StructuredTool(
             name=tool_name,
             description=tool_description,
-            func=tool_func
+            func=tool_func,
+            args_schema=ArgsSchema
         )
     
-    def get_all_tools(self) -> List[Tool]:
+    def get_all_tools(self) -> List[StructuredTool]:
         """Get all MCP tools as LangChain Tool objects"""
         return self._tools
     
-    def get_tools_for_server(self, server_name: str) -> List[Tool]:
+    def get_tools_for_server(self, server_name: str) -> List[StructuredTool]:
         """
         Get tools for a specific server.
         
@@ -159,7 +193,7 @@ class MCPClient:
             if tool.name in server_tool_names
         ]
     
-    def get_tools_by_names(self, tool_names: List[str]) -> List[Tool]:
+    def get_tools_by_names(self, tool_names: List[str]) -> List[StructuredTool]:
         """
         Get specific tools by name.
         
