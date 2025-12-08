@@ -1,15 +1,14 @@
-# LangChain Deep Agent for Manufacturing
+# LangChain Deep Agent Framework for Manufacturing
 
-A flexible, production-ready deep agent framework built with LangChain's **Deep Agents** library for manufacturing use cases. The framework supports specialized subagents that can be dynamically spawned to handle complex manufacturing workflows with MCP (Model Context Protocol) server integration.
+A production-ready [Deep Agents](https://python.langchain.com/) framework designed for manufacturing environments. This system demonstrates a hierarchical agent architecture that integrates real-time data monitoring (HighByte), predictive maintenance (RAG + Analytics), and automated reporting.
 
-## Features
+## 🚀 Key Features
 
-- 🤖 **Deep Agents Framework**: Built on LangChain's `deepagents` with hierarchical agent architecture
-- 🏭 **Manufacturing-Focused**: Designed for production monitoring, predictive maintenance, and quality control
-- 🔌 **MCP Integration**: Mock MCP servers for HighByte (OPC-UA), Teradata, and SQL Server
-- 🧠 **RAG Capabilities**: ChromaDB integration for manufacturing documentation and historical logs
-- 📊 **Observability**: Full LangSmith integration for tracing and debugging
-- 🐳 **Production-Ready**: Docker containerization included
+-   **Deep Agent Orchestration**: Hierarchical planning with specialized subagents (Retrieval, Analysis, Reporting).
+-   **MCP Integration**: First-class support for **Model Context Protocol** servers (simulated HighByte, Teradata, SQL Server).
+-   **RAG Knowledge Base**: Integrated ChromaDB for semantic search over manufacturing documentation (SOPs, Maintenance Guides).
+-   **Production Ready**: Dockerized deployment, LangSmith observability, and robust configuration management.
+-   **Extensible**: Modular design for adding new MCP servers or specialized subagents.
 
 ## Architecture
 
@@ -95,22 +94,26 @@ docker exec -it langchain-deepagent python examples/production_monitoring.py
 
 ```
 LangChain-DeepAgent/.
-├── src/                # Source code
-│   ├── agents/         # LangChain Deep Agent definitions
-│   ├── config/         # Configuration settings
-│   ├── mcp/            # MCP server integrations
-│   ├── rag/            # RAG knowledge base (Phase 5)
-│   ├── utils/          # Logging and helpers
-│   └── main.py         # Entry point
-├── tests/              # Test scripts
-│   ├── test_full_system.py
-│   ├── test_agent.py
-│   └── test_mcp.py
-├── .env                # Environment variables (git-ignored)
-├── docker-compose.yml  # Docker services
-├── Dockerfile          # Production build
-├── pyproject.toml      # Poetry dependencies
-└── README.md           # Documentationer definition
+├── src/                  # Source code
+│   ├── agents/           # LangChain Deep Agent definitions
+│   ├── config/           # Configuration settings
+│   ├── mcp/              # MCP server integrations
+│   ├── rag/              # RAG knowledge base
+│   ├── utils/            # Logging and helpers
+│   └── main.py           # Entry point
+├── tests/                # Test suite
+│   ├── integration/      # Pytest integration tests
+│   └── ...               # Unit tests
+├── examples/             # Ready-to-run scenarios
+│   ├── scenarios/
+│   └── run_examples.py
+├── docs/                 # Documentation
+│   └── deployment.md
+├── .env                  # Environment variables (git-ignored)
+├── docker-compose.yml    # Docker services
+├── Dockerfile            # Production build
+├── pyproject.toml        # Poetry dependencies
+└── README.md             # Project documentation
 ```
 
 ## Configuration
